@@ -39,6 +39,15 @@
     .fw-cta a { color: #555; font-weight: 500; text-decoration: underline; }
     .status { margin-top: 10px; font-size: 13px; color: #999; }
     .error { margin-top: 1rem; font-size: 14px; color: #c0392b; }
+    .gallery { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e5e5e5; }
+    .gallery h2 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
+    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .gallery-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 1rem; }
+    .gallery-word { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+    .gallery-concept { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .gallery-def { font-size: 13px; color: #555; line-height: 1.5; }
+    .gallery-empty { font-size: 14px; color: #aaa; }
+    @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -55,8 +64,15 @@
       Want words like this on your screens automatically? <a href="https://frameweave.com" target="_blank">That's Frame Weave.</a>
     </div>
     <div class="powered">
-      <div style="margin-bottom: 6px;">Made for your delightment by</div>
+      <div style="margin-bottom: 6px;">Powered by</div>
       <a href="https://frameweave.com" target="_blank" style="display: inline-block; opacity: 0.6; transition: opacity 0.2s;"><img src="/frame weave logo with icon.svg" alt="Frame Weave" style="height: 28px; width: auto;" /></a>
+    </div>
+
+    <div class="gallery">
+      <h2>Words so far</h2>
+      <div class="gallery-grid" id="gallery">
+        <p class="gallery-empty">No words yet. Be the first!</p>
+      </div>
     </div>
   </div>
 
@@ -65,9 +81,24 @@
     let currentExample = null;
     let currentDefinition = null;
 
+    async function loadGallery() {
+      try {
+        const res = await fetch('/api/gallery');
+        const words = await res.json();
+        const grid = document.getElementById('gallery');
+        if (!words.length) return;
+        grid.innerHTML = words.map(w => `
+          <div class="gallery-card">
+            <div class="gallery-word">${w.word}</div>
+            <div class="gallery-concept">${w.concept || ''}</div>
+            <div class="gallery-def">${w.definition}</div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
     async function speak() {
       if (!currentWord || !currentExample) return;
-
       const btn = document.getElementById('speak-btn');
       btn.textContent = 'Loading...';
       btn.classList.add('speaking');
@@ -82,12 +113,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text })
         });
-
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         audio.play();
-
         audio.onended = () => {
           btn.textContent = 'Hear it';
           btn.classList.remove('speaking');
@@ -102,13 +131,11 @@
 
     function shareTwitter() {
       const text = `${currentWord}: ${currentDefinition}\n\nMake your own at germanwordmaker.com`;
-      const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text);
-      window.open(url, '_blank');
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
     }
 
     function shareLinkedIn() {
-      const url = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://germanwordmaker.com');
-      window.open(url, '_blank');
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://germanwordmaker.com'), '_blank');
     }
 
     async function generate() {
@@ -165,7 +192,7 @@
         `;
 
         fwCta.style.display = 'block';
-
+        loadGallery();
       } catch (e) {
         errorEl.textContent = 'Something went wrong. Try again.';
       }
@@ -177,6 +204,8 @@
     document.getElementById('concept').addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generate();
     });
+
+    loadGallery();
   </script>
 </body>
 </html>
