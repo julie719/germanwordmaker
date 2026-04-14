@@ -30,7 +30,7 @@
     .example { font-size: 14px; color: #666; line-height: 1.6; border-left: 2px solid #ddd; padding-left: 12px; margin-bottom: 1.5rem; }
     .share-row { display: flex; align-items: center; gap: 10px; padding-top: 1.25rem; border-top: 1px solid #f0f0ee; flex-wrap: wrap; }
     .share-label { font-size: 13px; color: #999; margin-top: 0; }
-    .share-btn { margin-top: 0; padding: 7px 16px; font-size: 13px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; color: #444; display: flex; align-items: center; gap: 6px; }
+    .share-btn { margin-top: 0; padding: 7px 16px; font-size: 13px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; color: #444; }
     .share-btn:hover { background: #f0f0ee; }
     .powered { margin-top: 2.5rem; text-align: center; font-size: 13px; color: #bbb; }
     .powered a { color: #999; text-decoration: none; }
@@ -64,33 +64,39 @@
     let currentExample = null;
     let currentDefinition = null;
 
-    function speak() {
+    async function speak() {
       if (!currentWord || !currentExample) return;
-      window.speechSynthesis.cancel();
 
       const btn = document.getElementById('speak-btn');
-      btn.textContent = 'Speaking...';
+      btn.textContent = 'Loading...';
       btn.classList.add('speaking');
       btn.disabled = true;
 
       const exampleGerman = currentExample.split('(')[0].trim();
       const text = currentWord + '. ' + exampleGerman;
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'de-DE';
-      utterance.rate = 0.9;
+      try {
+        const res = await fetch('/api/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
 
-      const voices = window.speechSynthesis.getVoices();
-      const germanVoice = voices.find(v => v.lang.startsWith('de'));
-      if (germanVoice) utterance.voice = germanVoice;
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
 
-      utterance.onend = () => {
+        audio.onended = () => {
+          btn.textContent = 'Hear it';
+          btn.classList.remove('speaking');
+          btn.disabled = false;
+        };
+      } catch (e) {
         btn.textContent = 'Hear it';
         btn.classList.remove('speaking');
         btn.disabled = false;
-      };
-
-      window.speechSynthesis.speak(utterance);
+      }
     }
 
     function shareTwitter() {
@@ -107,8 +113,6 @@
     async function generate() {
       const concept = document.getElementById('concept').value.trim();
       if (!concept) return;
-
-      window.speechSynthesis.cancel();
 
       const btn = document.getElementById('btn');
       const status = document.getElementById('status');
