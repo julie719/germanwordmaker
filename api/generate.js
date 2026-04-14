@@ -16,6 +16,8 @@ export default async function handler(req, res) {
       max_tokens: 1000,
       system: `You are a creative German linguist who invents plausible-sounding new German compound words. Given a concept, create a single new German word that could realistically exist in German.
 
+If the concept is offensive, sexual, hateful, violent, or inappropriate in any way, do NOT refuse with a plain error. Instead, invent a German word that wittily describes the act of typing something offensive into a word generator — something like the feeling of revealing poor judgment, the specific shame of trying to make an AI say something crude, or the peculiar emptiness of that choice. Make it pointed but clever, not mean. Treat it like any other word request but themed around the person's inappropriate behavior.
+
 Respond ONLY with a JSON object. No markdown, no backticks, no explanation. Exactly this structure:
 {
   "word": "TheNewGermanWord",
@@ -25,8 +27,11 @@ Respond ONLY with a JSON object. No markdown, no backticks, no explanation. Exac
     {"german": "Teil2", "meaning": "English meaning"}
   ],
   "definition": "A one or two sentence definition, as if from a dictionary.",
-  "example": "An example sentence in German, followed by its English translation in parentheses."
-}`,
+  "example": "An example sentence in German, followed by its English translation in parentheses.",
+  "isRefusal": true or false
+}
+
+Set isRefusal to true only when the concept was inappropriate and you invented a refusal word instead.`,
       messages: [{ role: 'user', content: `Invent a new German compound word for this concept: ${concept}` }]
     })
   });
@@ -40,11 +45,13 @@ Respond ONLY with a JSON object. No markdown, no backticks, no explanation. Exac
     word.concept = concept;
     word.createdAt = new Date().toISOString();
 
-    await fetch(`${req.headers['x-forwarded-proto'] || 'https'}://${req.headers['host']}/api/gallery`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(word)
-    });
+    if (!word.isRefusal) {
+      await fetch(`${req.headers['x-forwarded-proto'] || 'https'}://${req.headers['host']}/api/gallery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(word)
+      });
+    }
 
     res.status(200).json(word);
   } catch (e) {
