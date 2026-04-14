@@ -37,6 +37,15 @@ Respond ONLY with a JSON object. No markdown, no backticks, no explanation. Exac
 
   try {
     const word = JSON.parse(clean);
+    word.concept = concept;
+    word.createdAt = new Date().toISOString();
+
+    await fetch(`${req.headers['x-forwarded-proto'] || 'https'}://${req.headers['host']}/api/gallery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(word)
+    });
+
     res.status(200).json(word);
   } catch (e) {
     res.status(500).json({ error: 'Failed to parse response', raw });
