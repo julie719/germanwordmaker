@@ -44,9 +44,27 @@ Set isRefusal to true only when the concept was inappropriate and you invented a
     const word = JSON.parse(clean);
     word.concept = concept;
     word.createdAt = new Date().toISOString();
+    word.wordKey = `${word.word.toLowerCase()}-${Date.now()}`;
+
+    const proto = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'];
+
+    const speakRes = await fetch(`${proto}://${host}/api/speak`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: word.word + '. ' + word.example.split('(')[0].trim(),
+        wordKey: word.wordKey
+      })
+    });
+
+    if (speakRes.ok) {
+      const audioUrl = speakRes.headers.get('X-Audio-Url');
+      if (audioUrl) word.audioUrl = audioUrl;
+    }
 
     if (!word.isRefusal) {
-      await fetch(`${req.headers['x-forwarded-proto'] || 'https'}://${req.headers['host']}/api/gallery`, {
+      await fetch(`${proto}://${host}/api/gallery`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(word)
