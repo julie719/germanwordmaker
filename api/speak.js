@@ -1,5 +1,3 @@
-import { put, list } from '@vercel/blob';
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -7,19 +5,7 @@ export default async function handler(req, res) {
   if (!text) return res.status(400).json({ error: 'No text provided' });
 
   const voiceId = 'xqj50N5hatZhF8MSqCFS';
-
-  if (wordKey) {
-    try {
-      const { blobs } = await list({ prefix: `audio/${wordKey}` });
-      if (blobs.length > 0) {
-        const audioRes = await fetch(blobs[0].url);
-        const audioBuffer = await audioRes.arrayBuffer();
-        res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('X-Audio-Url', blobs[0].url);
-        return res.send(Buffer.from(audioBuffer));
-      }
-    } catch (e) {}
-  }
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
@@ -39,14 +25,27 @@ export default async function handler(req, res) {
   const audioBuffer = await response.arrayBuffer();
 
   let audioUrl = null;
-  if (wordKey) {
+  if (wordKey && blobToken) {
     try {
-      const blob = await put(`audio/${wordKey}.mp3`, Buffer.from(audioBuffer), {
-        access: 'public',
-        contentType: 'audio/mpeg'
+      const filename = `audio-${wordKey}.mp3`;
+      const uploadRes = await fetch(`https://blob.vercel-storage.com/${filename}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${blobToken}`,
+          'Content-Type': 'audio/mpeg',
+          'x-content-type': 'audio/mpeg',
+          'cache-control': 'public, max-age=31536000'
+        },
+        body: Buffer.from(audioBuffer)
       });
-      audioUrl = blob.url;
-    } catch (e) {}
+
+      if (uploadRes.ok) {
+        const blobData = await uploadRes.json();
+        audioUrl = blobData.url;
+      }
+    } catch (e) {
+      console.error('Blob upload error:', e.message);
+    }
   }
 
   res.setHeader('Content-Type', 'audio/mpeg');
