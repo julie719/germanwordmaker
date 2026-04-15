@@ -1,3 +1,5 @@
+import { put, list } from '@vercel/blob';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -5,20 +7,15 @@ export default async function handler(req, res) {
   if (!text) return res.status(400).json({ error: 'No text provided' });
 
   const voiceId = 'xqj50N5hatZhF8MSqCFS';
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
   if (wordKey) {
     try {
-      const listRes = await fetch(`https://blob.vercel-storage.com?prefix=audio/${wordKey}`, {
-        headers: { Authorization: `Bearer ${blobToken}` }
-      });
-      const listData = await listRes.json();
-      if (listData.blobs && listData.blobs.length > 0) {
-        const cachedUrl = listData.blobs[0].url;
-        const audioRes = await fetch(cachedUrl);
+      const { blobs } = await list({ prefix: `audio/${wordKey}` });
+      if (blobs.length > 0) {
+        const audioRes = await fetch(blobs[0].url);
         const audioBuffer = await audioRes.arrayBuffer();
         res.setHeader('Content-Type', 'audio/mpeg');
-        res.setHeader('X-Audio-Url', cachedUrl);
+        res.setHeader('X-Audio-Url', blobs[0].url);
         return res.send(Buffer.from(audioBuffer));
       }
     } catch (e) {}
@@ -41,21 +38,18 @@ export default async function handler(req, res) {
 
   const audioBuffer = await response.arrayBuffer();
 
+  let audioUrl = null;
   if (wordKey) {
     try {
-      const filename = `audio/${wordKey}.mp3`;
-      await fetch(`https://blob.vercel-storage.com/${filename}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${blobToken}`,
-          'Content-Type': 'audio/mpeg',
-          'x-content-type': 'audio/mpeg'
-        },
-        body: Buffer.from(audioBuffer)
+      const blob = await put(`audio/${wordKey}.mp3`, Buffer.from(audioBuffer), {
+        access: 'public',
+        contentType: 'audio/mpeg'
       });
+      audioUrl = blob.url;
     } catch (e) {}
   }
 
   res.setHeader('Content-Type', 'audio/mpeg');
+  if (audioUrl) res.setHeader('X-Audio-Url', audioUrl);
   res.send(Buffer.from(audioBuffer));
 }
