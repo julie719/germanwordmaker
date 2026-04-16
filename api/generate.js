@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
   const { concept } = req.body;
@@ -47,3 +47,63 @@ Respond ONLY with a JSON object. No markdown, no backticks, no explanation. Exac
     const speakText = word.word + '. ' + word.example.split('(')[0].trim();
     const voiceId = 'xqj50N5hatZhF8MSqCFS';
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+
+    try {
+      const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': process.env.ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: speakText,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+
+      if (audioRes.ok) {
+        const audioBuffer = await audioRes.arrayBuffer();
+        const filename = `audio-${word.wordKey}.mp3`;
+
+        const uploadRes = await fetch(`https://blob.vercel-storage.com/${filename}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${blobToken}`,
+            'Content-Type': 'audio/mpeg',
+            'x-content-type': 'audio/mpeg',
+            'cache-control': 'public, max-age=31536000'
+          },
+          body: Buffer.from(audioBuffer)
+        });
+
+        if (uploadRes.ok) {
+          const blobData = await uploadRes.json();
+          word.audioUrl = blobData.url;
+        } else {
+          const errText = await uploadRes.text();
+          console.error('Blob upload failed:', uploadRes.status, errText);
+        }
+      }
+    } catch (audioErr) {
+      console.error('Audio error:', audioErr.message);
+    }
+
+    const proto = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'];
+
+    if (!word.isRefusal) {
+      await fetch(`${proto}://${host}/api/gallery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(word)
+      });
+    }
+
+    res.status(200).json(word);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to parse response', raw });
+  }
+};
+
+module.exports = handler;
