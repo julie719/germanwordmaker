@@ -170,13 +170,16 @@
     }
 
     function shareTwitter() {
-      const text = `${currentWord}: ${currentDefinition}\n\nMake your own at germanwordmaker.com`;
-      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
-    }
+  const wordSlug = encodeURIComponent(currentWord);
+  const text = `${currentWord}: ${currentDefinition}\n\nhttps://germanwordmaker.com/word/${wordSlug}`;
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+}
 
-    function shareLinkedIn() {
-      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://germanwordmaker.com'), '_blank');
-    }
+function shareLinkedIn() {
+  const wordSlug = encodeURIComponent(currentWord);
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(`https://germanwordmaker.com/word/${wordSlug}`), '_blank');
+}
+    
 
     async function generate() {
       const concept = document.getElementById('concept').value.trim();
