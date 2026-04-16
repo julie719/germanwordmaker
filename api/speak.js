@@ -1,11 +1,23 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { text, wordKey } = req.body;
-  if (!text) return res.status(400).json({ error: 'No text provided' });
-
+  const { text, historyId } = req.body;
   const voiceId = 'xqj50N5hatZhF8MSqCFS';
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+
+  if (historyId) {
+    try {
+      const historyRes = await fetch(`https://api.elevenlabs.io/v1/history/${historyId}/audio`, {
+        headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY }
+      });
+      if (historyRes.ok) {
+        const audioBuffer = await historyRes.arrayBuffer();
+        res.setHeader('Content-Type', 'audio/mpeg');
+        return res.send(Buffer.from(audioBuffer));
+      }
+    } catch (e) {}
+  }
+
+  if (!text) return res.status(400).json({ error: 'No text provided' });
 
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
@@ -23,32 +35,6 @@ export default async function handler(req, res) {
   if (!response.ok) return res.status(500).json({ error: 'ElevenLabs error' });
 
   const audioBuffer = await response.arrayBuffer();
-
-  let audioUrl = null;
-  if (wordKey && blobToken) {
-    try {
-      const filename = `audio-${wordKey}.mp3`;
-      const uploadRes = await fetch(`https://blob.vercel-storage.com/${filename}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${blobToken}`,
-          'Content-Type': 'audio/mpeg',
-          'x-content-type': 'audio/mpeg',
-          'cache-control': 'public, max-age=31536000'
-        },
-        body: Buffer.from(audioBuffer)
-      });
-
-      if (uploadRes.ok) {
-        const blobData = await uploadRes.json();
-        audioUrl = blobData.url;
-      }
-    } catch (e) {
-      console.error('Blob upload error:', e.message);
-    }
-  }
-
   res.setHeader('Content-Type', 'audio/mpeg');
-  if (audioUrl) res.setHeader('X-Audio-Url', audioUrl);
   res.send(Buffer.from(audioBuffer));
 }
