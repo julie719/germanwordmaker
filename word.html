@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>German Word Maker</title>
+  <meta name="description" content="A new German word, invented just for you." />
+  <meta property="og:image" content="https://germanwordmaker.com/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://germanwordmaker.com/og-image.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafaf8; color: #1a1a1a; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; padding-top: 4rem; }
+    .wrap { max-width: 600px; width: 100%; }
+    .back { font-size: 14px; color: #999; text-decoration: none; display: inline-block; margin-bottom: 2rem; }
+    .back:hover { color: #555; }
+    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; }
+    .word-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .word { font-size: 34px; font-weight: 500; }
+    .speak-btn { padding: 6px 14px; font-size: 13px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; }
+    .speak-btn:hover { background: #f0f0ee; }
+    .speak-btn.speaking { background: #f0f0ee; color: #999; }
+    .pronun { font-size: 14px; color: #888; margin-bottom: 1.25rem; font-style: italic; }
+    .label { font-size: 11px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .parts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; }
+    .part { background: #f5f5f3; border: 1px solid #e5e5e5; border-radius: 6px; padding: 4px 10px; font-size: 13px; color: #555; }
+    .part strong { color: #1a1a1a; font-weight: 500; }
+    .definition { font-size: 15px; line-height: 1.6; margin-bottom: 1.25rem; }
+    .example { font-size: 14px; color: #666; line-height: 1.6; border-left: 2px solid #ddd; padding-left: 12px; margin-bottom: 1.5rem; }
+    .share-row { display: flex; align-items: center; gap: 10px; padding-top: 1.25rem; border-top: 1px solid #f0f0ee; flex-wrap: wrap; }
+    .share-label { font-size: 13px; color: #999; }
+    .share-btn { padding: 7px 16px; font-size: 13px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; color: #444; font-family: inherit; }
+    .share-btn:hover { background: #f0f0ee; }
+    .try { margin-top: 2rem; text-align: center; }
+    .try a { font-size: 14px; color: #555; text-decoration: underline; }
+    .powered { margin-top: 2.5rem; text-align: center; font-size: 13px; color: #bbb; }
+    .error { font-size: 15px; color: #c0392b; margin-top: 2rem; }
+    .loading { font-size: 15px; color: #999; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="/" class="back">← Make your own word</a>
+    <div id="content" class="loading">Loading...</div>
+    <div class="try" id="try" style="display:none;">
+      <a href="/">Make your own German word</a>
+    </div>
+    <div class="powered" id="powered" style="display:none;">
+      <div style="margin-bottom: 6px;">An experiment by</div>
+      <a href="https://frameweave.com" target="_blank" style="display: inline-block; opacity: 0.6;">
+        <img src="/frame weave logo with icon.svg" alt="Frame Weave" style="height: 28px; width: auto;" />
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let currentWord = null;
+    let currentExample = null;
+    let currentHistoryId = null;
+
+    async function speak() {
+      if (!currentWord || !currentExample) return;
+      const btn = document.getElementById('speak-btn');
+      btn.textContent = 'Loading...';
+      btn.classList.add('speaking');
+      btn.disabled = true;
+
+      const exampleGerman = currentExample.split('(')[0].trim();
+      const text = currentWord + '. ' + exampleGerman;
+
+      try {
+        const res = await fetch('/api/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ historyId: currentHistoryId || null, text })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+        audio.onended = () => {
+          btn.textContent = 'Hear it';
+          btn.classList.remove('speaking');
+          btn.disabled = false;
+        };
+      } catch (e) {
+        btn.textContent = 'Hear it';
+        btn.classList.remove('speaking');
+        btn.disabled = false;
+      }
+    }
+
+    function shareTwitter(word, definition) {
+      const text = `${word}: ${definition}\n\n${window.location.href}`;
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function shareLinkedIn() {
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
+    }
+
+    async function load() {
+      const slug = window.location.pathname.replace('/word/', '').replace('/', '');
+      if (!slug) {
+        document.getElementById('content').innerHTML = '<p class="error">No word specified.</p>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/word?slug=${encodeURIComponent(slug)}`);
+        if (!res.ok) throw new Error('Word not found');
+        const word = await res.json();
+
+        currentWord = word.word;
+        currentExample = word.example;
+        currentHistoryId = word.elevenLabsHistoryId || null;
+
+        document.title = `${word.word} — German Word Maker`;
+
+        document.getElementById('content').innerHTML = `
+          <div class="card">
+            <div class="word-row">
+              <div class="word">${word.word}</div>
+              <button class="speak-btn" id="speak-btn" onclick="speak()">Hear it</button>
+            </div>
+            <div class="pronun">[${word.pronunciation}]</div>
+            <div class="label">Built from</div>
+            <div class="parts">
+              ${word.parts.map(p => `<div class="part"><strong>${p.german}</strong> — ${p.meaning}</div>`).join('')}
+            </div>
+            <div class="label">Definition</div>
+            <div class="definition">${word.definition}</div>
+            <div class="label">Example</div>
+            <div class="example">${word.example}</div>
+            <div class="share-row">
+              <span class="share-label">Share this word:</span>
+              <button class="share-btn" onclick="shareTwitter('${word.word.replace(/'/g, "\\'")}', '${word.definition.replace(/'/g, "\\'")}')">X / Twitter</button>
+              <button class="share-btn" onclick="shareLinkedIn()">LinkedIn</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('try').style.display = 'block';
+        document.getElementById('powered').style.display = 'block';
+
+      } catch (e) {
+        document.getElementById('content').innerHTML = '<p class="error">Word not found. It may have been removed.</p>';
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
