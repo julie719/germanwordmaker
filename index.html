@@ -127,6 +127,7 @@
             <div class="gallery-word">${w.word}</div>
             <div class="gallery-concept">${w.concept || ''}</div>
             <div class="gallery-def">${w.definition}</div>
+<div class="gallery-example" style="font-size: 12px; color: #888; line-height: 1.5; margin-top: 6px; border-left: 2px solid #eee; padding-left: 8px;">${w.example || ''}</div>
             <button class="gallery-speak" onclick="gallerySpeak(${i})" data-history="${w.elevenLabsHistoryId || ''}" data-text="${encodeURIComponent(w.word + '. ' + (w.example || '').split('(')[0].trim())}">Hear it</button>
           </div>
         `).join('');
