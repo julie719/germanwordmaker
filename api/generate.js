@@ -45,6 +45,31 @@ Set isRefusal to true only when the concept was inappropriate.`,
     word.concept = concept;
     word.createdAt = new Date().toISOString();
 
+    const speakText = word.word + '. ' + word.example.split('(')[0].trim();
+    const voiceId = 'xqj50N5hatZhF8MSqCFS';
+
+    try {
+      const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': process.env.ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: speakText,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+
+      if (audioRes.ok) {
+        const historyId = audioRes.headers.get('history-item-id');
+        if (historyId) word.elevenLabsHistoryId = historyId;
+      }
+    } catch (audioErr) {
+      console.error('Audio error:', audioErr.message);
+    }
+
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['host'];
 
