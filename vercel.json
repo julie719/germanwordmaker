@@ -1,6 +1,5 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/word/:slug", "destination": "/word.html" }
+  "routes": [
+    { "src": "/word/(.*)", "dest": "/word.html" }
   ]
 }
