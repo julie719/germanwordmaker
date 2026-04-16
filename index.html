@@ -45,7 +45,9 @@
     .gallery-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 1rem; }
     .gallery-word { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
     .gallery-concept { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .gallery-def { font-size: 13px; color: #555; line-height: 1.5; }
+    .gallery-def { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
+    .gallery-speak { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; }
+    .gallery-speak:hover { background: #f0f0ee; }
     .gallery-empty { font-size: 14px; color: #aaa; }
     @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
   </style>
@@ -64,7 +66,7 @@
       Want words like this on your screens automatically? <a href="https://frameweave.com" target="_blank">That's Frame Weave.</a>
     </div>
     <div class="powered">
-      <div style="margin-bottom: 6px;">An Experiment by</div>
+      <div style="margin-bottom: 6px;">An experiment by</div>
       <a href="https://frameweave.com" target="_blank" style="display: inline-block; opacity: 0.6; transition: opacity 0.2s;"><img src="/frame weave logo with icon.svg" alt="Frame Weave" style="height: 28px; width: auto;" /></a>
     </div>
 
@@ -80,6 +82,39 @@
     let currentWord = null;
     let currentExample = null;
     let currentDefinition = null;
+    let currentHistoryId = null;
+
+    async function speakFromHistory(historyId, text, btnEl) {
+      btnEl.textContent = 'Loading...';
+      btnEl.disabled = true;
+
+      try {
+        const res = await fetch('/api/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ historyId, text })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+        audio.onended = () => {
+          btnEl.textContent = 'Hear it';
+          btnEl.disabled = false;
+        };
+      } catch (e) {
+        btnEl.textContent = 'Hear it';
+        btnEl.disabled = false;
+      }
+    }
+
+    async function speak() {
+      if (!currentWord || !currentExample) return;
+      const btn = document.getElementById('speak-btn');
+      const exampleGerman = currentExample.split('(')[0].trim();
+      const text = currentWord + '. ' + exampleGerman;
+      await speakFromHistory(currentHistoryId, text, btn);
+    }
 
     async function loadGallery() {
       try {
@@ -87,31 +122,29 @@
         const words = await res.json();
         const grid = document.getElementById('gallery');
         if (!words.length) return;
-        grid.innerHTML = words.map(w => `
+        grid.innerHTML = words.map((w, i) => `
           <div class="gallery-card">
             <div class="gallery-word">${w.word}</div>
             <div class="gallery-concept">${w.concept || ''}</div>
             <div class="gallery-def">${w.definition}</div>
+            <button class="gallery-speak" onclick="gallerySpeak(${i})" data-history="${w.elevenLabsHistoryId || ''}" data-text="${encodeURIComponent(w.word + '. ' + (w.example || '').split('(')[0].trim())}">Hear it</button>
           </div>
         `).join('');
       } catch (e) {}
     }
 
-    async function speak() {
-      if (!currentWord || !currentExample) return;
-      const btn = document.getElementById('speak-btn');
+    async function gallerySpeak(index) {
+      const btn = document.querySelectorAll('.gallery-speak')[index];
+      const historyId = btn.dataset.history;
+      const text = decodeURIComponent(btn.dataset.text);
       btn.textContent = 'Loading...';
-      btn.classList.add('speaking');
       btn.disabled = true;
-
-      const exampleGerman = currentExample.split('(')[0].trim();
-      const text = currentWord + '. ' + exampleGerman;
 
       try {
         const res = await fetch('/api/speak', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ historyId: historyId || null, text })
         });
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -119,12 +152,10 @@
         audio.play();
         audio.onended = () => {
           btn.textContent = 'Hear it';
-          btn.classList.remove('speaking');
           btn.disabled = false;
         };
       } catch (e) {
         btn.textContent = 'Hear it';
-        btn.classList.remove('speaking');
         btn.disabled = false;
       }
     }
@@ -167,6 +198,7 @@
         currentWord = word.word;
         currentExample = word.example;
         currentDefinition = word.definition;
+        currentHistoryId = word.elevenLabsHistoryId || null;
 
         resultEl.innerHTML = `
           <div class="card">
