@@ -1,5 +1,6 @@
 {
-  "routes": [
-    { "src": "/word/(.*)", "dest": "/word.html" }
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/word/(.*)", "destination": "/word.html" }
   ]
 }
