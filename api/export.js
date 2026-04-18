@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
     const valid = words.filter(Boolean);
 
-    const header = ['word', 'pronunciation', 'concept', 'definition', 'example', 'parts', 'elevenLabsHistoryId', 'createdAt'];
+    const header = ['word', 'pronunciation', 'concept', 'definition', 'example', 'parts', 'audioUrl', 'createdAt'];
 
     const rows = valid.map(w => [
       w.word || '',
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       w.definition || '',
       w.example || '',
       (w.parts || []).map(p => `${p.german} (${p.meaning})`).join(' + '),
-      w.elevenLabsHistoryId || '',
+      w.elevenLabsHistoryId ? `https://germanwordmaker.com/api/audio?id=${w.elevenLabsHistoryId}` : '',
       w.createdAt || ''
     ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
 
