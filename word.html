@@ -101,7 +101,7 @@
     }
 
     async function load() {
-      const slug = window.location.pathname.replace('/word/', '').replace('/', '');
+      const slug = decodeURIComponent(window.location.pathname.replace('/word/', '').replace('/', ''));
       if (!slug) {
         document.getElementById('content').innerHTML = '<p class="error">No word specified.</p>';
         return;
