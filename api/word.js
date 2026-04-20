@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { slug } = req.query;
+  const slug = decodeURIComponent(req.query.slug || '');
   if (!slug) return res.status(400).json({ error: 'No word provided' });
 
   const url = process.env.KV_REST_API_URL;
