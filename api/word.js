@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       const d = await r.json();
       if (d.result) {
         const word = JSON.parse(decodeURIComponent(d.result));
-        if (word.word.toLowerCase() === slug.toLowerCase()) {
+        if (word.word.toLowerCase() === decodeURIComponent(slug).toLowerCase()) {
           return res.status(200).json(word);
         }
       }
