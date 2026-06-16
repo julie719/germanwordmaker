@@ -63,5 +63,7 @@ Set isRefusal to true only when the concept was inappropriate.`,
     } catch (audioErr) {
       console.error('Audio error:', audioErr.message);
     }
+    }
+}
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host =
