@@ -66,4 +66,16 @@ Set isRefusal to true only when the concept was inappropriate.`,
     }
 }
     const proto = req.headers['x-forwarded-proto'] || 'https';
-    const host =
+    const host = req.headers['host'];
+    if (!word.isRefusal) {
+      await fetch(`${proto}://${host}/api/gallery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(word)
+      });
+    }
+    res.status(200).json(word);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to parse response', raw });
+  }
+}
