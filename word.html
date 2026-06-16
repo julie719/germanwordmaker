@@ -99,6 +99,13 @@
 
     function shareLinkedIn() {
       window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
+      function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy link', 2000);
+  });
+}
     }
 
     async function load() {
