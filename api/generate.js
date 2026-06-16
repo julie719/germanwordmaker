@@ -31,10 +31,6 @@ Set isRefusal to true only when the concept was inappropriate.`,
     })
   });
   const data = await response.json();
-  if (!response.ok || !data.content) {
-    console.error('Anthropic API error:', JSON.stringify(data));
-    return res.status(500).json({ error: 'Anthropic API failed', detail: data });
-  }
   const raw = data.content.find(b => b.type === 'text')?.text || '';
   const clean = raw.replace(/```json|```/g, '').trim();
   try {
@@ -63,8 +59,6 @@ Set isRefusal to true only when the concept was inappropriate.`,
     } catch (audioErr) {
       console.error('Audio error:', audioErr.message);
     }
-    }
-}
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['host'];
     if (!word.isRefusal) {
