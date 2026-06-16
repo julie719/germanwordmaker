@@ -37,6 +37,14 @@ Set isRefusal to true only when the concept was inappropriate.`,
   });
 
   const data = await response.json();
+
+// Add this:
+if (!response.ok || !data.content) {
+  console.error('Anthropic API error:', JSON.stringify(data));
+  return res.status(500).json({ error: 'Anthropic API failed', detail: data });
+}
+
+const raw = data.content.find(b => b.type === 'text')?.text || '';
   const raw = data.content.find(b => b.type === 'text')?.text || '';
   const clean = raw.replace(/```json|```/g, '').trim();
 
