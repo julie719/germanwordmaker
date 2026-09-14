@@ -32,7 +32,15 @@ export default async function handler(req, res) {
     })
   });
 
-  if (!response.ok) return res.status(500).json({ error: 'ElevenLabs error' });
+  if (!response.ok) {
+    const errBody = await response.text();
+    console.error('ElevenLabs error', response.status, errBody);
+    return res.status(500).json({
+      error: 'ElevenLabs error',
+      status: response.status,
+      details: errBody
+    });
+  }
 
   const audioBuffer = await response.arrayBuffer();
   res.setHeader('Content-Type', 'audio/mpeg');
