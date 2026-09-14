@@ -97,15 +97,16 @@
       window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
     }
 
-    function shareLinkedIn() {       window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');     }      function copyLink() {       navigator.clipboard.writeText(window.location.href).then(() => {         const btn = document.getElementById('copy-btn');         btn.textContent = 'Copied!';         setTimeout(() => btn.textContent = 'Copy link', 2000);       });     } {
+    function shareLinkedIn() {
       window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(window.location.href), '_blank');
-      function copyLink() {
-  navigator.clipboard.writeText(window.location.href).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy link', 2000);
-  });
-}
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy link', 2000);
+      });
     }
 
     async function load() {
@@ -144,7 +145,8 @@
             <div class="share-row">
               <span class="share-label">Share this word:</span>
               <button class="share-btn" onclick="shareTwitter('${word.word.replace(/'/g, "\\'")}', '${word.definition.replace(/'/g, "\\'")}')">X / Twitter</button>
-              <button class="share-btn" onclick="shareLinkedIn()">LinkedIn</button> <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button> <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button> <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button>
+              <button class="share-btn" onclick="shareLinkedIn()">LinkedIn</button>
+              <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button>
             </div>
           </div>
         `;
