@@ -59,6 +59,8 @@
     .gallery-speak:hover { background: #f0f0ee; }
     .gallery-copy { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; margin-left: 6px; }
     .gallery-copy:hover { background: #f0f0ee; }
+    .gallery-share { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; margin-left: 6px; }
+    .gallery-share:hover { background: #f0f0ee; }
     .gallery-empty { font-size: 14px; color: #aaa; }
     @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
   </style>
@@ -141,6 +143,8 @@
 <div class="gallery-example" style="font-size: 12px; color: #888; line-height: 1.5; margin-top: 6px; border-left: 2px solid #eee; padding-left: 8px;">${w.example || ''}</div>
             <button class="gallery-speak" onclick="gallerySpeak(${i})" data-history="${w.elevenLabsHistoryId || ''}" data-text="${encodeURIComponent(w.word + '. ' + (w.example || '').split('(')[0].trim())}">Hear it</button>
             <button class="gallery-copy" onclick="galleryCopyLink(${i}, this)" data-slug="${encodeURIComponent(w.word)}">Copy link</button>
+            <button class="gallery-share" onclick="galleryShareTwitter(this)" data-word="${encodeURIComponent(w.word)}" data-def="${encodeURIComponent(w.definition)}">X / Twitter</button>
+            <button class="gallery-share" onclick="galleryShareLinkedIn(this)" data-word="${encodeURIComponent(w.word)}">LinkedIn</button>
           </div>
         `).join('');
       } catch (e) {}
@@ -153,6 +157,20 @@
         btnEl.textContent = 'Copied!';
         setTimeout(() => btnEl.textContent = 'Copy link', 2000);
       });
+    }
+
+    function galleryShareTwitter(btnEl) {
+      const word = decodeURIComponent(btnEl.dataset.word);
+      const definition = decodeURIComponent(btnEl.dataset.def);
+      const url = `${window.location.origin}/word/${encodeURIComponent(word)}`;
+      const text = `${word}: ${definition}\n\n${url}`;
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function galleryShareLinkedIn(btnEl) {
+      const word = decodeURIComponent(btnEl.dataset.word);
+      const url = `${window.location.origin}/word/${encodeURIComponent(word)}`;
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank');
     }
 
     async function gallerySpeak(index) {
