@@ -210,6 +210,16 @@ function shareLinkedIn() {
   const wordSlug = encodeURIComponent(currentWord);
   window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(`https://germanwordmaker.com/word/${wordSlug}`), '_blank');
 }
+
+function copyLink() {
+  const wordSlug = encodeURIComponent(currentWord);
+  const url = `${window.location.origin}/word/${wordSlug}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy link', 2000);
+  });
+}
     
 
     async function generate() {
@@ -262,6 +272,7 @@ function shareLinkedIn() {
               <span class="share-label">Share this word:</span>
               <button class="share-btn" onclick="shareTwitter()">X / Twitter</button>
               <button class="share-btn" onclick="shareLinkedIn()">LinkedIn</button>
+              <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button>
             </div>
           </div>
         `;
