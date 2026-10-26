@@ -56,7 +56,9 @@ Set isRefusal to true only when the concept was inappropriate.`,
   let word;
   try {
     word = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    if (typeof word.word !== 'string' || !word.word.trim() || !Array.isArray(word.parts)) throw new Error('missing fields');
+    if (typeof word.word !== 'string' || !Array.isArray(word.parts)) throw new Error('missing fields');
+    // A word is letters, optionally joined by hyphens (E-Mail-Frust); anything else is a garbled reply.
+    if (!/^\p{L}+(-\p{L}+)*$/u.test(word.word.trim())) throw new Error('not a word');
   } catch (e) {
     console.error('Unparseable word:', raw);
     return res.status(502).json({ error: 'That one came out garbled. Try again.' });

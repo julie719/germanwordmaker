@@ -59,7 +59,7 @@ By default, Anthropic and ElevenLabs are mocked by `dev/mock-ai.mjs`. It returns
 | `long` | a 71-letter word with 7 parts and long text (layout stress test) |
 | `refusal` | an `isRefusal` word, shown struck through and not saved |
 | `error` | an unparseable reply, which shows the error message |
-| `xss` | HTML, quotes and `%` in every field (escaping test) |
+| `xss` | HTML, quotes and `%` in the definition, example and parts (escaping test) |
 | anything else | a random normal word |
 
 To use the real APIs, remove the `*_BASE_URL` lines from `.env` and add your own keys.
