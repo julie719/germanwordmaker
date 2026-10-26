@@ -325,6 +325,21 @@ a { color: inherit; }
 
 .result { margin-top: 32px; }
 
+/* What the word was made for */
+.concept {
+  margin: 0 0 12px;
+  font: 400 16px/1.45 var(--serif);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.concept q {
+  color: var(--ink);
+  font-style: italic;
+}
+
+.concept.is-entering { animation: fade-up var(--t) var(--ease); }
+
 .sign {
   margin: 0;
   scroll-margin-top: 16px;
@@ -894,6 +909,21 @@ a { color: inherit; }
 .dict-actions .stars-meta {
   min-width: 3.6em;
 }
+
+.dict-concept {
+  grid-column: 1 / -1;
+  max-width: 36em;
+  margin: 0 0 4px;
+  font: 400 15px/1.45 var(--serif);
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.dict-concept q { font-style: italic; }
 
 .dict-def {
   grid-column: 1 / -1;

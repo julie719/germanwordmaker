@@ -1,5 +1,5 @@
 import { h } from './dom.js';
-import { renderSign, renderEntry, fitSign } from './entry.js';
+import { renderConcept, renderSign, renderEntry, fitSign } from './entry.js';
 
 const root = document.getElementById('word-root');
 const slug = decodeURIComponent(location.pathname.replace(/^\/word\//, '').replace(/\/$/, ''));
@@ -23,7 +23,7 @@ if (!data) {
 if (data.word) {
   const word = data.word;
   const sign = renderSign(word, { heading: 'h1' });
-  root.replaceChildren(sign, renderEntry(word));
+  root.replaceChildren(renderConcept(word.concept) || '', sign, renderEntry(word));
   fitSign(sign);
   document.title = `${word.word} | German Word Maker`;
 } else {

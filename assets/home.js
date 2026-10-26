@@ -1,5 +1,5 @@
 import { h, reducedMotion } from './dom.js';
-import { renderSign, renderEntry, observeSign, fitSign, reveal, audioButton, stars } from './entry.js';
+import { renderConcept, renderSign, renderEntry, observeSign, fitSign, reveal, audioButton, stars } from './entry.js';
 import { hyphenate, wordPath } from './text.js';
 
 const PAGE_SIZE = 24;
@@ -55,6 +55,13 @@ async function generate() {
   currentSign?.setAttribute('data-loading', '');
   currentEntry?.classList.add('is-dimmed');
 
+  // Show what this word is for straight away, while it's being made.
+  const currentConcept = result.querySelector('.concept');
+  const pendingConcept = renderConcept(concept);
+  pendingConcept.classList.add('is-entering');
+  if (currentConcept) currentConcept.replaceWith(pendingConcept);
+  else result.prepend(pendingConcept);
+
   try {
     let res;
     try {
@@ -72,6 +79,8 @@ async function generate() {
   } catch (err) {
     currentSign?.removeAttribute('data-loading');
     currentEntry?.classList.remove('is-dimmed');
+    if (currentConcept) pendingConcept.replaceWith(currentConcept);
+    else pendingConcept.remove();
     formError.textContent = err.message;
   } finally {
     busy = false;
@@ -89,7 +98,14 @@ function showWord(word) {
       h('a', { href: 'https://frameweave.com', target: '_blank', rel: 'noopener' }, 'That’s Frame Weave.')
     )
   });
-  result.replaceChildren(sign, entry);
+  // Keep the concept line shown while generating; swap in the word beneath it.
+  const caption = result.querySelector('.concept');
+  if (caption?.querySelector('q')?.textContent !== word.concept) {
+    caption?.remove();
+    if (word.concept) result.prepend(renderConcept(word.concept));
+  }
+  result.querySelectorAll('.sign, .entry').forEach(el => el.remove());
+  result.append(sign, entry);
   fitSign(sign);
   reveal(sign, entry);
   announcer.textContent = `New word: ${word.word}. ${word.definition || ''}`;
@@ -131,6 +147,7 @@ function dictRow(word) {
       audioButton(word, { compact: true }),
       stars(word, { compact: true })
     ),
+    renderConcept(word.concept, 'dict-concept'),
     h('p', { class: 'dict-def' }, word.definition)
   );
 }

@@ -3,6 +3,13 @@
 import { h, icon, reducedMotion, storage } from './dom.js';
 import { hyphenate, splitExample, wordPath, ratingLabel } from './text.js';
 
+/* ---------- Concept ---------- */
+
+// What the word was made for: For “the moment your coffee goes lukewarm”
+export function renderConcept(concept, className = 'concept') {
+  return concept ? h('p', { class: className }, 'For ', h('q', null, concept)) : null;
+}
+
 /* ---------- Sign ---------- */
 
 // variant: 'word' | 'refusal' (struck through, like a town-exit sign) | 'unknown'
@@ -78,14 +85,11 @@ export function observeSign(sign) {
 
 // The one orchestrated moment: the word wipes onto the plate, then the entry
 // follows line by line.
-export function reveal(sign, entry) {
+export function reveal(...elements) {
   if (reducedMotion()) return;
-  sign.classList.add('is-revealing');
-  entry?.classList.add('is-revealing');
-  setTimeout(() => {
-    sign.classList.remove('is-revealing');
-    entry?.classList.remove('is-revealing');
-  }, 1000);
+  elements = elements.filter(Boolean);
+  elements.forEach(el => el.classList.add('is-revealing'));
+  setTimeout(() => elements.forEach(el => el.classList.remove('is-revealing')), 1000);
 }
 
 /* ---------- Entry ---------- */
