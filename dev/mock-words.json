@@ -2,11 +2,21 @@
   "normal": [
     {
       "word": "Schutzfolienabziehfreude",
+      "article": "die",
       "pronunciation": "SHOOTS-foh-lee-en-AHP-tsee-FROY-deh",
       "parts": [
-        { "german": "Schutzfolie", "meaning": "protective film" },
-        { "german": "abziehen", "meaning": "to peel off" },
-        { "german": "Freude", "meaning": "joy" }
+        {
+          "german": "Schutzfolie",
+          "meaning": "protective film"
+        },
+        {
+          "german": "abziehen",
+          "meaning": "to peel off"
+        },
+        {
+          "german": "Freude",
+          "meaning": "joy"
+        }
       ],
       "definition": "The deep, almost private satisfaction of peeling the protective film off a brand-new screen in one clean pull.",
       "example": "Mit einem leisen Seufzer genoss sie die Schutzfolienabziehfreude. (With a quiet sigh, she savored the joy of peeling off the screen film.)",
@@ -14,10 +24,17 @@
     },
     {
       "word": "Kaffeekipppunkt",
+      "article": "der",
       "pronunciation": "KAF-feh-KIPP-poonkt",
       "parts": [
-        { "german": "Kaffee", "meaning": "coffee" },
-        { "german": "Kipppunkt", "meaning": "tipping point" }
+        {
+          "german": "Kaffee",
+          "meaning": "coffee"
+        },
+        {
+          "german": "Kipppunkt",
+          "meaning": "tipping point"
+        }
       ],
       "definition": "The exact sip at which a cup of coffee goes from pleasantly warm to disappointingly lukewarm.",
       "example": "Ich habe den Kaffeekipppunkt wieder verpasst. (I missed the coffee tipping point again.)",
@@ -25,11 +42,21 @@
     },
     {
       "word": "Gruppenfotoblinzelangst",
+      "article": "die",
       "pronunciation": "GROOP-pen-FOH-toh-BLIN-tsel-ahngst",
       "parts": [
-        { "german": "Gruppenfoto", "meaning": "group photo" },
-        { "german": "blinzeln", "meaning": "to blink" },
-        { "german": "Angst", "meaning": "fear" }
+        {
+          "german": "Gruppenfoto",
+          "meaning": "group photo"
+        },
+        {
+          "german": "blinzeln",
+          "meaning": "to blink"
+        },
+        {
+          "german": "Angst",
+          "meaning": "fear"
+        }
       ],
       "definition": "The rising dread, during the countdown to a group photo, that you will be the one person caught mid-blink.",
       "example": "„Drei, zwei…“ – und schon packte ihn die Gruppenfotoblinzelangst. (\"Three, two…\" – and the group-photo blink dread took hold of him.)",
@@ -37,10 +64,17 @@
     },
     {
       "word": "Ladebalkengeduld",
+      "article": "die",
       "pronunciation": "LAH-deh-bahl-ken-geh-DOOLT",
       "parts": [
-        { "german": "Ladebalken", "meaning": "loading bar" },
-        { "german": "Geduld", "meaning": "patience" }
+        {
+          "german": "Ladebalken",
+          "meaning": "loading bar"
+        },
+        {
+          "german": "Geduld",
+          "meaning": "patience"
+        }
       ],
       "definition": "The thin, brittle patience reserved for a progress bar stuck at 99%.",
       "example": "Meine Ladebalkengeduld ist heute aufgebraucht. (My loading-bar patience is used up today.)",
@@ -49,15 +83,37 @@
   ],
   "long": {
     "word": "Montagmorgenbesprechungskameraeinschaltverweigerungsgemeinschaftsgefühl",
+    "article": "das",
     "pronunciation": "MOHN-tahk-MOR-gen-beh-SHPREH-khoongs-KAH-meh-rah-INE-shahlt-fer-VYE-geh-roongs-geh-MINE-shafts-geh-FUEL",
     "parts": [
-      { "german": "Montag", "meaning": "Monday" },
-      { "german": "Morgen", "meaning": "morning" },
-      { "german": "Besprechung", "meaning": "meeting" },
-      { "german": "Kamera", "meaning": "camera" },
-      { "german": "einschalten", "meaning": "to switch on" },
-      { "german": "Verweigerung", "meaning": "refusal" },
-      { "german": "Gemeinschaftsgefühl", "meaning": "sense of community" }
+      {
+        "german": "Montag",
+        "meaning": "Monday"
+      },
+      {
+        "german": "Morgen",
+        "meaning": "morning"
+      },
+      {
+        "german": "Besprechung",
+        "meaning": "meeting"
+      },
+      {
+        "german": "Kamera",
+        "meaning": "camera"
+      },
+      {
+        "german": "einschalten",
+        "meaning": "to switch on"
+      },
+      {
+        "german": "Verweigerung",
+        "meaning": "refusal"
+      },
+      {
+        "german": "Gemeinschaftsgefühl",
+        "meaning": "sense of community"
+      }
     ],
     "definition": "The quiet, unspoken solidarity among participants of an early Monday video call who have all, without discussion, decided to leave their cameras off. Nobody mentions it, nobody needs to; the grid of initials says everything, and for a brief moment a group of near-strangers is united by the shared knowledge that none of them has brushed their hair.",
     "example": "Als der Chef fragte, ob jemand die Kamera einschalten könne, herrschte nur Schweigen – ein perfektes Montagmorgenbesprechungskameraeinschaltverweigerungsgemeinschaftsgefühl. (When the boss asked whether anyone could turn on their camera, there was only silence – a perfect Monday-morning-meeting camera-refusal solidarity.)",
@@ -65,13 +121,38 @@
   },
   "refusal": {
     "word": "Provokationsleere",
+    "article": "die",
     "pronunciation": "pro-vo-kah-tsee-OHNS-LEH-reh",
     "parts": [
-      { "german": "Provokation", "meaning": "provocation" },
-      { "german": "Leere", "meaning": "emptiness" }
+      {
+        "german": "Provokation",
+        "meaning": "provocation"
+      },
+      {
+        "german": "Leere",
+        "meaning": "emptiness"
+      }
     ],
     "definition": "The hollow feeling of having typed something crude into a word generator, only to be handed a dictionary entry about yourself.",
     "example": "Nach dem dritten Versuch spürte er nur noch Provokationsleere. (After the third attempt, he felt only the emptiness of provocation.)",
     "isRefusal": true
+  },
+  "xss": {
+    "word": "Sonderzeichen<b>prüfung</b>",
+    "article": "die",
+    "pronunciation": "ZON-der-tsy-khen-\"proof\"-oong",
+    "parts": [
+      {
+        "german": "Sonderzeichen",
+        "meaning": "special <characters>"
+      },
+      {
+        "german": "Prüfung",
+        "meaning": "test & check"
+      }
+    ],
+    "definition": "A 100% test word: <img src=x onerror=alert(1)> and a \"quoted\" bit with an apostrophe's edge and %E0%A4%A broken escape.",
+    "example": "Die Sonderzeichenprüfung war „erfolgreich“ (100%). (The special-character test was \"successful\" (100%).)",
+    "isRefusal": false
   }
 }

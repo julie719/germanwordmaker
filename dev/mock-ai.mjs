@@ -3,7 +3,8 @@
 //
 // Concept keywords pick a specific response: "long" (layout stress test),
 // "refusal" (isRefusal: true, not saved to the gallery), "error" (unparseable
-// reply, shows the error state). Anything else gets a random normal word.
+// reply, shows the error state), "xss" (HTML, quotes and % in every field).
+// Anything else gets a random normal word.
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 
@@ -13,6 +14,7 @@ const DELAY_MS = 1200;
 function pickWord(concept) {
   const c = concept.toLowerCase();
   if (c.includes('error')) return null;
+  if (c.includes('xss')) return fixtures.xss;
   if (c.includes('refusal')) return fixtures.refusal;
   if (c.includes('long')) return fixtures.long;
   return fixtures.normal[Math.floor(Math.random() * fixtures.normal.length)];
