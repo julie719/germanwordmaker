@@ -1,0 +1,41 @@
+# Local stand-in for Upstash, reachable at http://localhost:8079 with token local-dev-token.
+# redis-rest speaks Upstash's REST API; kv-proxy adds the path-style form the app uses.
+services:
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-data:/data
+
+  redis-rest:
+    image: hiett/serverless-redis-http:latest
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: local-dev-token
+      SRH_CONNECTION_STRING: redis://redis:6379
+    depends_on:
+      - redis
+
+  kv-proxy:
+    image: node:20-alpine
+    command: node /app/kv-proxy.mjs
+    volumes:
+      - ./dev/kv-proxy.mjs:/app/kv-proxy.mjs:ro
+    environment:
+      UPSTREAM_URL: http://redis-rest:80
+    ports:
+      - "8079:80"
+    depends_on:
+      - redis-rest
+
+  # Fake Anthropic + ElevenLabs APIs, see dev/mock-ai.mjs.
+  mock-ai:
+    image: node:20-alpine
+    command: node /app/mock-ai.mjs
+    volumes:
+      - ./dev/mock-ai.mjs:/app/mock-ai.mjs:ro
+      - ./dev/mock-words.json:/app/mock-words.json:ro
+    ports:
+      - "8081:80"
+
+volumes:
+  redis-data:

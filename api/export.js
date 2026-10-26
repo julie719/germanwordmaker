@@ -1,36 +1,26 @@
+import { listNewest } from './_lib/store.js';
+
 export default async function handler(req, res) {
   const { key } = req.query;
-  if (key !== 'DeutschisFun1!') return res.status(401).json({ error: 'Unauthorized' });
-
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   try {
-    const listRes = await fetch(`${url}/lrange/words/0/199`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const listData = await listRes.json();
-    const keys = listData.result || [];
+    const { words } = await listNewest(0, 100000);
 
-    const words = await Promise.all(keys.map(async key => {
-      const r = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const d = await r.json();
-      return d.result ? JSON.parse(decodeURIComponent(d.result)) : null;
-    }));
+    const header = ['word', 'article', 'pronunciation', 'concept', 'definition', 'example', 'parts', 'ratingAvg', 'ratingCount', 'audioUrl', 'createdAt'];
 
-    const valid = words.filter(Boolean);
-
-    const header = ['word', 'pronunciation', 'concept', 'definition', 'example', 'parts', 'audioUrl', 'createdAt'];
-
-    const rows = valid.map(w => [
+    const rows = words.map(w => [
       w.word || '',
+      w.article || '',
       w.pronunciation || '',
       w.concept || '',
       w.definition || '',
       w.example || '',
       (w.parts || []).map(p => `${p.german} (${p.meaning})`).join(' + '),
+      w.rating.count ? w.rating.avg : '',
+      w.rating.count,
       w.elevenLabsHistoryId ? `https://germanwordmaker.com/api/audio?id=${w.elevenLabsHistoryId}` : '',
       w.createdAt || ''
     ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(','));
