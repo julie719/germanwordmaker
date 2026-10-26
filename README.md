@@ -64,6 +64,6 @@ By default, Anthropic and ElevenLabs are mocked by `dev/mock-ai.mjs`. It returns
 
 To use the real APIs, remove the `*_BASE_URL` lines from `.env` and add your own keys.
 
-`npm run images` regenerates `og-image.png` and `apple-touch-icon.png` (with `vercel dev` running).
+`npm run images` regenerates the favicons, `apple-touch-icon.png` and, with `vercel dev` running, `og-image.png`.
 
 Local dev never touches production data: words you generate go into the local Redis. `npm run db:down` stops everything, and the data stays in a Docker volume.
