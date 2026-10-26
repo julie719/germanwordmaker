@@ -1,297 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <script defer src="/_vercel/insights/script.js"></script>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>German Word Maker</title>
-<meta name="description" content="Invent a new German word for anything." />
-<meta property="og:title" content="German Word Maker" />
-<meta property="og:description" content="Invent a new German word for anything. Powered by Frame Weave." />
-<meta property="og:image" content="https://germanwordmaker.com/og-image.png" />
-<meta property="og:url" content="https://germanwordmaker.com" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://germanwordmaker.com/og-image.png" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafaf8; color: #1a1a1a; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; padding-top: 4rem; }
-    .wrap { max-width: 600px; width: 100%; }
-    h1 { font-size: 28px; font-weight: 500; margin-bottom: 6px; }
-    .sub { font-size: 15px; color: #666; margin-bottom: 1.5rem; }
-    textarea { width: 100%; min-height: 90px; font-size: 15px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; resize: vertical; font-family: inherit; line-height: 1.5; }
-    textarea:focus { outline: none; border-color: #999; }
-    button { margin-top: 10px; padding: 10px 22px; border: 1px solid #ccc; border-radius: 8px; background: #fff; font-size: 14px; cursor: pointer; font-family: inherit; }
-    button:hover { background: #f0f0ee; }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
-    .card { margin-top: 2rem; background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; }
-    .word-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-    .word { font-size: 34px; font-weight: 500; }
-    .speak-btn { padding: 6px 14px; font-size: 13px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; margin-top: 0; }
-    .speak-btn:hover { background: #f0f0ee; }
-    .speak-btn.speaking { background: #f0f0ee; color: #999; }
-    .pronun { font-size: 14px; color: #888; margin-bottom: 1.25rem; font-style: italic; }
-    .label { font-size: 11px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
-    .parts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; }
-    .part { background: #f5f5f3; border: 1px solid #e5e5e5; border-radius: 6px; padding: 4px 10px; font-size: 13px; color: #555; }
-    .part strong { color: #1a1a1a; font-weight: 500; }
-    .definition { font-size: 15px; line-height: 1.6; margin-bottom: 1.25rem; }
-    .example { font-size: 14px; color: #666; line-height: 1.6; border-left: 2px solid #ddd; padding-left: 12px; margin-bottom: 1.5rem; }
-    .share-row { display: flex; align-items: center; gap: 10px; padding-top: 1.25rem; border-top: 1px solid #f0f0ee; flex-wrap: wrap; }
-    .share-label { font-size: 13px; color: #999; margin-top: 0; }
-    .share-btn { margin-top: 0; padding: 7px 16px; font-size: 13px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; color: #444; }
-    .share-btn:hover { background: #f0f0ee; }
-    .powered { margin-top: 2.5rem; text-align: center; font-size: 13px; color: #bbb; }
-    .powered a { color: #999; text-decoration: none; }
-    .powered a:hover { color: #555; }
-    .fw-cta { margin-top: 1rem; text-align: center; font-size: 13px; color: #888; }
-    .fw-cta a { color: #555; font-weight: 500; text-decoration: underline; }
-    .status { margin-top: 10px; font-size: 13px; color: #999; }
-    .error { margin-top: 1rem; font-size: 14px; color: #c0392b; }
-    .gallery { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e5e5e5; }
-    .gallery h2 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
-    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .gallery-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 1rem; }
-    .gallery-word { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
-    .gallery-concept { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .gallery-def { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 10px; }
-    .gallery-speak { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; }
-    .gallery-speak:hover { background: #f0f0ee; }
-    .gallery-copy { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; margin-left: 6px; }
-    .gallery-copy:hover { background: #f0f0ee; }
-    .gallery-share { padding: 5px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; cursor: pointer; color: #555; font-family: inherit; margin-top: 0; margin-left: 6px; }
-    .gallery-share:hover { background: #f0f0ee; }
-    .gallery-empty { font-size: 14px; color: #aaa; }
-    @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
-  </style>
+  <meta name="description" content="Describe a feeling, moment or situation and get a brand-new German word for it." />
+  <meta name="theme-color" content="#F4F4F2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#161716" media="(prefers-color-scheme: dark)" />
+  <meta property="og:title" content="German Word Maker" />
+  <meta property="og:description" content="Invent a new German word for anything. An experiment by Frame Weave." />
+  <meta property="og:image" content="https://germanwordmaker.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://germanwordmaker.com" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://germanwordmaker.com/og-image.png" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preload" href="/fonts/d-din-bold.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/source-serif-4-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="modulepreload" href="/assets/entry.js" />
+  <link rel="modulepreload" href="/assets/dom.js" />
+  <link rel="modulepreload" href="/assets/text.js" />
+  <script type="module" src="/assets/home.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <h1>German Word Maker</h1>
-    <p class="sub">Describe a concept, feeling, or situation. Get a brand new German word for it.</p>
-    <textarea id="concept" placeholder="e.g. the satisfying feeling of peeling protective film off a new screen"></textarea>
-    <br>
-    <button id="btn" onclick="generate()">Make a word</button>
-    <div class="status" id="status"></div>
-    <div class="error" id="error"></div>
-    <div id="result"></div>
-    <div class="fw-cta" id="fw-cta" style="display:none;">
-      Want words like this on your screens automatically? <a href="https://frameweave.com" target="_blank">That's Frame Weave.</a>
-    </div>
-    <div class="powered">
-      <div style="margin-bottom: 6px;">An experiment by</div>
-      <a href="https://frameweave.com" target="_blank" style="display: inline-block; opacity: 0.6; transition: opacity 0.2s;"><img src="/frame-weave-logo.svg" alt="Frame Weave" style="height: 28px; width: auto;" /></a>
-    </div>
+  <header class="site-header page">
+    <h1 class="wordmark"><span class="wordmark-sign" aria-hidden="true"></span>German Word Maker</h1>
+  </header>
 
-    <div class="gallery">
-      <h2>Words so far</h2>
-      <div class="gallery-grid" id="gallery">
-        <p class="gallery-empty">No words yet. Be the first!</p>
+  <main class="page">
+    <p class="intro"><span>Describe a feeling, moment or situation.</span> <span>Get the German word for it.</span></p>
+
+    <form class="composer" id="composer">
+      <label class="visually-hidden" for="concept">Describe a feeling, moment or situation</label>
+      <textarea id="concept" name="concept" rows="2" maxlength="200" autocomplete="off" enterkeyhint="go"
+        placeholder="the satisfying feeling of peeling the protective film off a new screen"></textarea>
+      <div class="composer-bar">
+        <span class="composer-count" id="concept-count" aria-hidden="true"></span>
+        <button class="btn btn-primary" id="make" type="submit" disabled><span class="btn-label">Make a word</span></button>
       </div>
-    </div>
-  </div>
+    </form>
+    <p class="form-error" id="form-error" role="alert"></p>
 
-  <script>
-    let currentWord = null;
-    let currentExample = null;
-    let currentDefinition = null;
-    let currentHistoryId = null;
-
-    async function speakFromHistory(historyId, text, btnEl) {
-      btnEl.textContent = 'Loading...';
-      btnEl.disabled = true;
-
-      try {
-        const res = await fetch('/api/speak', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ historyId, text })
-        });
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.play();
-        audio.onended = () => {
-          btnEl.textContent = 'Hear it';
-          btnEl.disabled = false;
-        };
-      } catch (e) {
-        btnEl.textContent = 'Hear it';
-        btnEl.disabled = false;
-      }
-    }
-
-    async function speak() {
-      if (!currentWord || !currentExample) return;
-      const btn = document.getElementById('speak-btn');
-      const exampleGerman = currentExample.split('(')[0].trim();
-      const text = currentWord + '. ' + exampleGerman;
-      await speakFromHistory(currentHistoryId, text, btn);
-    }
-
-    async function loadGallery() {
-      try {
-        const res = await fetch('/api/gallery');
-        const words = await res.json();
-        const grid = document.getElementById('gallery');
-        if (!words.length) return;
-        grid.innerHTML = words.map((w, i) => `
-          <div class="gallery-card">
-            <div class="gallery-word"><a href="/word/${encodeURIComponent(w.word)}" style="color: inherit; text-decoration: none;">${w.word}</a></div>
-            <div class="gallery-concept">${w.concept || ''}</div>
-            <div class="gallery-def">${w.definition}</div>
-<div class="gallery-example" style="font-size: 12px; color: #888; line-height: 1.5; margin-top: 6px; border-left: 2px solid #eee; padding-left: 8px;">${w.example || ''}</div>
-            <button class="gallery-speak" onclick="gallerySpeak(${i})" data-history="${w.elevenLabsHistoryId || ''}" data-text="${encodeURIComponent(w.word + '. ' + (w.example || '').split('(')[0].trim())}">Hear it</button>
-            <button class="gallery-copy" onclick="galleryCopyLink(${i}, this)" data-slug="${encodeURIComponent(w.word)}">Copy link</button>
-            <button class="gallery-share" onclick="galleryShareTwitter(this)" data-word="${encodeURIComponent(w.word)}" data-def="${encodeURIComponent(w.definition)}">X / Twitter</button>
-            <button class="gallery-share" onclick="galleryShareLinkedIn(this)" data-word="${encodeURIComponent(w.word)}">LinkedIn</button>
+    <section class="result" id="result" aria-label="Your word">
+      <figure class="sign" data-variant="word">
+        <div class="sign-plate">
+          <div class="sign-inner">
+            <span class="sign-article" lang="de">der</span>
+            <h2 class="sign-word" lang="de"><span class="sign-word-text">Wort&shy;macher</span></h2>
+            <span class="sign-sub">VORT-makh-er</span>
           </div>
-        `).join('');
-      } catch (e) {}
-    }
+        </div>
+      </figure>
+      <div class="entry">
+        <ol class="parts" aria-label="Built from">
+          <li class="part"><span class="part-de" lang="de">Wort</span><span class="part-en">word</span></li>
+          <li class="part"><span class="part-de" lang="de">Macher</span><span class="part-en">maker</span></li>
+        </ol>
+        <p class="definition">A machine that invents a German word for any feeling, moment or situation you describe. Try it above; your word goes on the sign.</p>
+        <blockquote class="example">
+          <p class="example-de" lang="de">Der Wortmacher hatte für alles ein Wort.</p>
+          <p class="example-en">The word maker had a word for everything.</p>
+        </blockquote>
+      </div>
+    </section>
+    <p class="visually-hidden" id="announcer" aria-live="polite"></p>
 
-    function galleryCopyLink(index, btnEl) {
-      const slug = btnEl.dataset.slug;
-      const url = `${window.location.origin}/word/${slug}`;
-      navigator.clipboard.writeText(url).then(() => {
-        btnEl.textContent = 'Copied!';
-        setTimeout(() => btnEl.textContent = 'Copy link', 2000);
-      });
-    }
+    <section class="dict" aria-labelledby="dict-title">
+      <div class="dict-header">
+        <div>
+          <h2 class="dict-title" id="dict-title" lang="de">Wörterbuch</h2>
+          <p class="dict-sub" id="dict-sub">Every word made here, newest first.</p>
+        </div>
+        <div class="seg" id="dict-sort" role="group" aria-label="Sort the dictionary" data-active="new">
+          <button type="button" data-sort="new" aria-pressed="true">Newest</button>
+          <button type="button" data-sort="top" aria-pressed="false">Top rated</button>
+          <span class="seg-thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+      <ol class="dict-list" id="dict-list"></ol>
+      <div class="dict-more">
+        <button class="btn btn-quiet" id="dict-more" type="button" hidden>Show more</button>
+      </div>
+    </section>
+  </main>
 
-    function galleryShareTwitter(btnEl) {
-      const word = decodeURIComponent(btnEl.dataset.word);
-      const definition = decodeURIComponent(btnEl.dataset.def);
-      const url = `${window.location.origin}/word/${encodeURIComponent(word)}`;
-      const text = `${word}: ${definition}\n\n${url}`;
-      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
-    }
-
-    function galleryShareLinkedIn(btnEl) {
-      const word = decodeURIComponent(btnEl.dataset.word);
-      const url = `${window.location.origin}/word/${encodeURIComponent(word)}`;
-      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(url), '_blank');
-    }
-
-    async function gallerySpeak(index) {
-      const btn = document.querySelectorAll('.gallery-speak')[index];
-      const historyId = btn.dataset.history;
-      const text = decodeURIComponent(btn.dataset.text);
-      btn.textContent = 'Loading...';
-      btn.disabled = true;
-
-      try {
-        const res = await fetch('/api/speak', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ historyId: historyId || null, text })
-        });
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.play();
-        audio.onended = () => {
-          btn.textContent = 'Hear it';
-          btn.disabled = false;
-        };
-      } catch (e) {
-        btn.textContent = 'Hear it';
-        btn.disabled = false;
-      }
-    }
-
-    function shareTwitter() {
-  const wordSlug = encodeURIComponent(currentWord);
-  const text = `${currentWord}: ${currentDefinition}\n\nhttps://germanwordmaker.com/word/${wordSlug}`;
-  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
-}
-
-function shareLinkedIn() {
-  const wordSlug = encodeURIComponent(currentWord);
-  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(`https://germanwordmaker.com/word/${wordSlug}`), '_blank');
-}
-
-function copyLink() {
-  const wordSlug = encodeURIComponent(currentWord);
-  const url = `${window.location.origin}/word/${wordSlug}`;
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy link', 2000);
-  });
-}
-    
-
-    async function generate() {
-      const concept = document.getElementById('concept').value.trim();
-      if (!concept) return;
-
-      const btn = document.getElementById('btn');
-      const status = document.getElementById('status');
-      const resultEl = document.getElementById('result');
-      const errorEl = document.getElementById('error');
-      const fwCta = document.getElementById('fw-cta');
-
-      btn.disabled = true;
-      resultEl.innerHTML = '';
-      errorEl.textContent = '';
-      fwCta.style.display = 'none';
-      status.textContent = 'Inventing...';
-
-      try {
-        const res = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ concept })
-        });
-
-        const word = await res.json();
-        if (word.error) throw new Error(word.error);
-
-        currentWord = word.word;
-        currentExample = word.example;
-        currentDefinition = word.definition;
-        currentHistoryId = word.elevenLabsHistoryId || null;
-
-        resultEl.innerHTML = `
-          <div class="card">
-            <div class="word-row">
-              <div class="word">${word.word}</div>
-              <button class="speak-btn" id="speak-btn" onclick="speak()">Hear it</button>
-            </div>
-            <div class="pronun">[${word.pronunciation}]</div>
-            <div class="label">Built from</div>
-            <div class="parts">
-              ${word.parts.map(p => `<div class="part"><strong>${p.german}</strong> — ${p.meaning}</div>`).join('')}
-            </div>
-            <div class="label">Definition</div>
-            <div class="definition">${word.definition}</div>
-            <div class="label">Example</div>
-            <div class="example">${word.example}</div>
-            <div class="share-row">
-              <span class="share-label">Share this word:</span>
-              <button class="share-btn" onclick="shareTwitter()">X / Twitter</button>
-              <button class="share-btn" onclick="shareLinkedIn()">LinkedIn</button>
-              <button class="share-btn" id="copy-btn" onclick="copyLink()">Copy link</button>
-            </div>
-          </div>
-        `;
-
-        fwCta.style.display = 'block';
-        loadGallery();
-      } catch (e) {
-        errorEl.textContent = 'Something went wrong. Try again.';
-      }
-
-      btn.disabled = false;
-      status.textContent = '';
-    }
-
-    document.getElementById('concept').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) generate();
-    });
-
-    loadGallery();
-  </script>
+  <footer class="site-footer page">
+    <span class="made-by">An experiment by <a class="fw-logo" href="https://frameweave.com" target="_blank" rel="noopener" aria-label="Frame Weave"></a></span>
+  </footer>
 </body>
 </html>

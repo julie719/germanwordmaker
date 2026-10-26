@@ -3,6 +3,11 @@
   "scripts": {
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
-    "db:seed": "node dev/seed.mjs"
+    "db:seed": "node dev/seed.mjs",
+    "test": "node --test",
+    "images": "node dev/render-images.mjs"
+  },
+  "dependencies": {
+    "@vercel/og": "0.9.0"
   }
 }

@@ -1,0 +1,1019 @@
+/* German Word Maker
+   The word goes on a German town sign (Ortsschild); everything else is set
+   like a quiet dictionary page. Colours are RAL traffic colours, type is
+   D-DIN (a DIN 1451 revival, the road-sign face) and Source Serif 4. */
+
+@font-face { font-family: "D-DIN"; src: url(/fonts/d-din-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "D-DIN"; src: url(/fonts/d-din-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "D-DIN Condensed"; src: url(/fonts/d-din-condensed-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Source Serif 4"; src: url(/fonts/source-serif-4-400-normal.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Source Serif 4"; src: url(/fonts/source-serif-4-400-italic.woff2) format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Source Serif 4"; src: url(/fonts/source-serif-4-600-normal.woff2) format("woff2"); font-weight: 600; font-display: swap; }
+
+:root {
+  /* RAL 1023 Verkehrsgelb, 9005 Tiefschwarz, 9003 Signalweiß, 7043 Verkehrsgrau B, 7035 Lichtgrau, 3020 Verkehrsrot */
+  --gelb: #F7C600;
+  --sign-ink: #0A0A0A;
+  --rot: #C1121C;
+  --paper: #F4F4F2;
+  --surface: #FFFFFF;
+  --ink: #0A0A0A;
+  --muted: #4E5452;
+  --line: #D5D9D6;
+  --hover: rgb(10 10 10 / .06);
+  --danger: #B3101A;
+  --thumb: #FFFFFF;
+  --plate-shadow: 0 1px 0 rgb(0 0 0 / .08), 0 22px 44px -28px rgb(0 0 0 / .5);
+
+  --din: "D-DIN", "DIN Alternate", "Bahnschrift", "Arial Narrow", system-ui, sans-serif;
+  --din-cond: "D-DIN Condensed", "DIN Condensed", "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  --serif: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  --t-fast: 90ms;
+  --t: 180ms;
+  --t-slow: 280ms;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161716;
+    --surface: #1E201F;
+    --ink: #ECECE8;
+    --muted: #A2A8A5;
+    --line: #313432;
+    --hover: rgb(236 236 232 / .07);
+    --danger: #FF8A80;
+    --thumb: #2E3230;
+    /* The sign stays yellow, like a reflective sign at night. */
+    --plate-shadow: 0 0 0 1px rgb(255 255 255 / .03), 0 24px 60px -30px rgb(247 198 0 / .28);
+  }
+}
+
+/* ---------- Base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 16px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 17px/1.55 var(--serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--gelb); color: var(--sign-ink); }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--gelb);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.page {
+  width: min(100% - 32px, 680px);
+  margin-inline: auto;
+}
+
+@media (min-width: 600px) {
+  .page { width: min(100% - 48px, 680px); }
+}
+
+/* ---------- Header and footer ---------- */
+
+.site-header {
+  padding-top: 24px;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 700 17px/1 var(--din);
+  letter-spacing: .01em;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+/* A tiny Ortsschild */
+.wordmark-sign {
+  width: 28px;
+  height: 18px;
+  border-radius: 3.5px;
+  background: var(--gelb);
+  box-shadow: inset 0 0 0 2px var(--gelb), inset 0 0 0 3.5px var(--sign-ink);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: 96px;
+  padding: 24px 0 40px;
+  border-top: 1px solid var(--line);
+  font: 400 14px/1.4 var(--din);
+  color: var(--muted);
+}
+
+.made-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fw-logo {
+  display: inline-block;
+  width: 88px;
+  height: 24px;
+  color: var(--ink);
+  opacity: .75;
+  background: currentColor;
+  -webkit-mask: url(/frame-weave-logo.svg) no-repeat left center / contain;
+  mask: url(/frame-weave-logo.svg) no-repeat left center / contain;
+  border-radius: 2px;
+  transition: opacity var(--t) var(--ease);
+}
+
+.fw-logo:hover { opacity: 1; }
+
+.site-footer a:not(.fw-logo) {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: 700 15px/1 var(--din);
+  letter-spacing: .01em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease),
+    opacity var(--t) var(--ease),
+    transform var(--t-fast) var(--ease);
+}
+
+.btn:active:not(:disabled) { transform: scale(.97); }
+.btn:disabled { cursor: default; opacity: .4; }
+
+.btn-primary {
+  min-width: 132px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 84%, var(--paper));
+}
+
+.btn-quiet {
+  border-color: var(--line);
+  background: var(--surface);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--ink) 35%, var(--line));
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.btn-icon:hover:not(:disabled) { background: var(--hover); }
+
+.btn-label { display: inline-block; }
+
+.btn.is-confirming .btn-label { animation: tick var(--t) var(--ease); }
+
+.icon {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* ---------- Composer ---------- */
+
+.intro {
+  margin: 56px 0 20px;
+  font: 400 clamp(22px, 4.4vw, 28px)/1.3 var(--serif);
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+
+@media (min-width: 600px) {
+  .intro span { display: block; }
+}
+
+.composer {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+}
+
+.composer:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gelb) 60%, transparent);
+}
+
+.composer textarea {
+  display: block;
+  width: 100%;
+  min-height: calc(2lh + 20px);
+  max-height: 40vh;
+  padding: 14px 16px 6px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: 400 19px/1.45 var(--serif);
+  resize: none;
+  field-sizing: content;
+}
+
+.composer textarea:focus-visible { box-shadow: none; }
+
+.composer textarea::placeholder {
+  color: var(--muted);
+  opacity: .75;
+}
+
+.composer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px;
+}
+
+.composer-count {
+  font: 400 13px/1 var(--din);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity var(--t) var(--ease);
+}
+
+.composer-count.is-visible { opacity: 1; }
+.composer-count.is-full { color: var(--danger); }
+
+.form-error {
+  margin: 10px 2px 0;
+  font: 400 15px/1.4 var(--din);
+  color: var(--danger);
+}
+
+.form-error:empty { display: none; }
+.form-error:not(:empty) { animation: fade-up var(--t) var(--ease); }
+
+/* ---------- The sign ---------- */
+
+.result { margin-top: 32px; }
+
+.sign {
+  margin: 0;
+  scroll-margin-top: 16px;
+}
+
+.sign-plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--gelb);
+  color: var(--sign-ink);
+  box-shadow: var(--plate-shadow);
+}
+
+/* The black rim set in from the edge */
+.sign-plate::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 3.5px solid var(--sign-ink);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.sign-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 188px;
+  padding: 28px 30px 30px;
+  text-align: center;
+  transition: opacity var(--t) var(--ease);
+}
+
+.sign-article {
+  font: 400 19px/1 var(--din);
+}
+
+.sign-word {
+  width: 100%;
+  margin: 2px 0 4px;
+  font: 700 clamp(34px, 10vw, 72px)/1.04 var(--din);
+  letter-spacing: -.005em;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
+.sign-word.is-measuring .sign-word-text { white-space: nowrap; }
+.sign-word.is-condensed { font-family: var(--din-cond); }
+
+/* Wrapped words break at the soft hyphens between compound parts; words with
+   no known parts fall back to the browser's German hyphenation. */
+.sign-word.is-wrapped {
+  line-height: 1.06;
+  overflow-wrap: anywhere;
+}
+
+.sign-word.is-wrapped.is-auto-hyphens {
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.sign-sub {
+  max-width: 100%;
+  font: 400 17px/1.25 var(--din);
+  overflow-wrap: anywhere;
+}
+
+/* Town-exit sign: a red bar corner to corner */
+.sign-strike {
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+}
+
+.sign-strike svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sign-strike line {
+  stroke: var(--rot);
+  stroke-width: 13;
+  vector-effect: non-scaling-stroke;
+  opacity: .94;
+}
+
+@media (max-width: 480px) {
+  .sign-plate { border-radius: 13px; }
+  .sign-plate::before { inset: 6px; border-width: 3px; border-radius: 8px; }
+  .sign-inner { min-height: 148px; padding: 20px 18px 22px; gap: 4px; }
+  .sign-article { font-size: 16px; }
+  .sign-sub { font-size: 14.5px; }
+  .sign-strike { inset: 11px; }
+  .sign-strike line { stroke-width: 9; }
+}
+
+/* Generating: the old word dims and a reflective sheen crosses the plate */
+.sign[data-loading] .sign-inner { opacity: .3; }
+
+.sign[data-loading] .sign-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .6) 50%, transparent 70%);
+  background-size: 260% 100%;
+  animation: sheen 1.15s var(--ease) infinite;
+  pointer-events: none;
+}
+
+@keyframes sheen {
+  from { background-position: 140% 0; }
+  to { background-position: -40% 0; }
+}
+
+/* ---------- Entry ---------- */
+
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 22px;
+  overflow-wrap: anywhere;
+  transition: opacity var(--t) var(--ease);
+}
+
+/* Compounds in running text can be very long; let German text hyphenate. */
+.entry [lang="de"] {
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.entry.is-dimmed { opacity: .35; }
+
+.parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.part {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-right: 16px;
+}
+
+.part + .part { padding-left: 20px; }
+
+.part + .part::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font: 400 17px/1.25 var(--din);
+  color: var(--muted);
+}
+
+.part-de { font: 700 17px/1.25 var(--din); }
+
+.part-en {
+  font: italic 400 14.5px/1.35 var(--serif);
+  color: var(--muted);
+}
+
+.definition {
+  max-width: 34em;
+  margin: 0;
+  font: 400 20px/1.55 var(--serif);
+  text-wrap: pretty;
+}
+
+.example {
+  margin: 0;
+  padding: 2px 0 2px 16px;
+  border-left: 3px solid var(--gelb);
+}
+
+.example p { margin: 0; }
+
+.example-de {
+  font: italic 400 18px/1.55 var(--serif);
+  text-wrap: pretty;
+}
+
+.example-en {
+  margin-top: 4px !important;
+  font: 400 15.5px/1.5 var(--serif);
+  color: var(--muted);
+}
+
+.entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  padding-top: 4px;
+}
+
+.entry-note,
+.entry-cta {
+  margin: 0;
+  font: 400 15px/1.45 var(--din);
+  color: var(--muted);
+}
+
+.entry-cta a { color: var(--ink); text-underline-offset: 3px; }
+
+/* The reveal: plate settles, word wipes on, entry follows line by line */
+.sign.is-revealing .sign-plate { animation: settle 340ms var(--ease) both; }
+.sign.is-revealing .sign-word { animation: wipe 380ms var(--ease) 60ms both; }
+.sign.is-revealing .sign-article { animation: fade-up 260ms var(--ease) 30ms both; }
+.sign.is-revealing .sign-sub { animation: fade-up 260ms var(--ease) 200ms both; }
+.sign.is-revealing .sign-strike { animation: draw 340ms var(--ease) 380ms both; }
+
+.entry.is-revealing > * {
+  animation: fade-up 280ms var(--ease) both;
+  animation-delay: calc(180ms + var(--i, 0) * 40ms);
+}
+
+@keyframes settle { from { transform: translateY(6px) scale(.985); } }
+
+@keyframes wipe {
+  from { clip-path: inset(-20% 100% -20% 0); opacity: .2; }
+  to { clip-path: inset(-20% 0 -20% 0); opacity: 1; }
+}
+
+@keyframes draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } }
+
+@keyframes tick { from { opacity: 0; transform: translateY(3px); } }
+
+/* ---------- Audio button ---------- */
+
+.audio-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+}
+
+.audio-glyph > * {
+  grid-area: 1 / 1;
+  transition: opacity var(--t-fast) var(--ease), transform var(--t) var(--ease);
+}
+
+.eq, .spinner { opacity: 0; transform: scale(.6); }
+
+.btn-audio[data-state="loading"] .icon-speaker,
+.btn-audio[data-state="playing"] .icon-speaker { opacity: 0; transform: scale(.6); }
+
+.btn-audio[data-state="loading"] .spinner,
+.btn-audio[data-state="playing"] .eq { opacity: 1; transform: none; }
+
+.btn-audio[data-state="playing"] { border-color: var(--ink); }
+.btn-audio[data-state="error"] { color: var(--danger); }
+
+.spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.eq i {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: eq .9s ease-in-out infinite paused;
+}
+
+.eq i:nth-child(2) { animation-delay: -.3s; }
+.eq i:nth-child(3) { animation-delay: -.6s; }
+.btn-audio[data-state="playing"] .eq i { animation-play-state: running; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes eq { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+
+/* ---------- Stars ---------- */
+
+.stars {
+  --size: 22px;
+  --pct: 0%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.stars-compact {
+  --size: 17px;
+  gap: 6px;
+  min-height: 36px;
+}
+
+.stars-group {
+  position: relative;
+  display: inline-block;
+  height: var(--size);
+}
+
+.stars-track,
+.stars-fill {
+  display: flex;
+}
+
+.stars-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--pct);
+  overflow: hidden;
+  transition: width var(--t) var(--ease);
+}
+
+.star {
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+}
+
+.star svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.5;
+}
+
+.stars-track .star svg {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ink) 38%, transparent);
+}
+
+.stars-fill .star svg {
+  fill: var(--gelb);
+  stroke: color-mix(in srgb, var(--sign-ink) 55%, var(--gelb));
+}
+
+.stars[data-mode="yours"] .stars-fill .star svg,
+.stars[data-mode="preview"] .stars-fill .star svg { stroke: var(--sign-ink); }
+
+.star.is-popped { animation: pop 240ms var(--ease); }
+
+@keyframes pop { 40% { transform: scale(1.3); } }
+
+.star-hit {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  width: 20%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.star-hit:nth-of-type(1) { left: 0; }
+.star-hit:nth-of-type(2) { left: 20%; }
+.star-hit:nth-of-type(3) { left: 40%; }
+.star-hit:nth-of-type(4) { left: 60%; }
+.star-hit:nth-of-type(5) { left: 80%; }
+
+.stars-meta {
+  display: inline-block;
+  font: 400 14px/1.2 var(--din);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.stars-compact .stars-meta { font-size: 13px; }
+.stars-meta.is-ticking { animation: tick var(--t) var(--ease); }
+
+/* ---------- Share menu ---------- */
+
+.share { position: relative; }
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  min-width: 212px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 14px 34px -14px rgb(0 0 0 / .3), 0 2px 6px -2px rgb(0 0 0 / .1);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px) scale(.96);
+  transform-origin: top left;
+  transition:
+    opacity 120ms var(--ease),
+    transform 120ms var(--ease),
+    visibility 0s linear 120ms;
+}
+
+.share-end .menu {
+  left: auto;
+  right: 0;
+  transform-origin: top right;
+}
+
+.share[data-open] .menu {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--ink);
+  font: 400 15px/1.2 var(--din);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease);
+}
+
+.menu-item:hover { background: var(--hover); }
+.menu-item:focus-visible { outline-offset: -2px; box-shadow: none; }
+
+/* ---------- Wörterbuch ---------- */
+
+.dict { margin-top: 88px; }
+
+.dict-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.dict-title {
+  margin: 0;
+  font: 700 30px/1.1 var(--din);
+  letter-spacing: -.005em;
+}
+
+.dict-sub {
+  margin: 4px 0 0;
+  font: 400 15px/1.4 var(--serif);
+  color: var(--muted);
+}
+
+.seg {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border-radius: 9px;
+  background: var(--hover);
+}
+
+.seg button {
+  position: relative;
+  z-index: 1;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--muted);
+  font: 700 14px/1 var(--din);
+  cursor: pointer;
+  transition: color var(--t) var(--ease);
+}
+
+.seg button[aria-pressed="true"] { color: var(--ink); }
+
+.seg-thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 7px;
+  background: var(--thumb);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .12), 0 0 0 1px rgb(0 0 0 / .03);
+  transition: transform var(--t-slow) var(--ease);
+}
+
+.seg[data-active="top"] .seg-thumb { transform: translateX(100%); }
+
+.dict-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity var(--t) var(--ease);
+}
+
+.dict-list.is-fading { opacity: .35; }
+
+.dict-entry {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  padding: 18px 0 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dict-head {
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.dict-word {
+  font: 700 21px/1.2 var(--din);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+  overflow-wrap: anywhere;
+  border-radius: 3px;
+  transition: text-decoration-color var(--t) var(--ease);
+}
+
+.dict-word:hover { text-decoration-color: var(--gelb); }
+
+.dict-article {
+  font: 400 17px/1.2 var(--din);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dict-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dict-actions .stars-meta {
+  min-width: 3.6em;
+}
+
+.dict-def {
+  grid-column: 1 / -1;
+  max-width: 36em;
+  margin: 0;
+  font: 400 16.5px/1.5 var(--serif);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .dict-entry { grid-template-columns: 1fr; }
+  .dict-actions { order: 3; margin: 2px 0 0 -8px; }
+}
+
+/* A word you just made slides in with a highlighter swipe that fades */
+.dict-entry.is-new { animation: row-in 320ms var(--ease) both; }
+
+.dict-entry.is-new::before {
+  content: "";
+  position: absolute;
+  inset: 0 -12px;
+  z-index: -1;
+  border-radius: 8px;
+  background: var(--gelb);
+  opacity: 0;
+  animation: highlight 1.8s ease-out 150ms;
+}
+
+.dict-entry.is-appearing {
+  animation: fade-up 260ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 25ms);
+}
+
+@keyframes row-in { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes highlight { from { opacity: .4; } to { opacity: 0; } }
+
+.dict-skeleton {
+  display: grid;
+  gap: 10px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sk {
+  height: 12px;
+  border-radius: 4px;
+  background: var(--line);
+  animation: sk-pulse 1.1s ease-in-out infinite alternate;
+}
+
+.sk-word { width: 38%; height: 20px; }
+.sk-line { width: 92%; }
+.sk-line.short { width: 64%; }
+
+@keyframes sk-pulse { from { opacity: .45; } to { opacity: .9; } }
+
+.dict-message {
+  padding: 28px 0;
+  font: 400 16px/1.5 var(--serif);
+  color: var(--muted);
+}
+
+.dict-message .btn { margin-left: 8px; }
+
+.dict-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.dict-more .btn[hidden] { display: none; }
+
+/* ---------- Word page ---------- */
+
+.back {
+  display: inline-block;
+  margin-top: 40px;
+  font: 400 15px/1 var(--din);
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 3px;
+  transition: color var(--t-fast) var(--ease);
+}
+
+.back:hover { color: var(--ink); }
+
+.word-main .result { margin-top: 20px; }
+
+.make-own {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin-top: 56px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.make-own p {
+  margin: 0;
+  font: 400 19px/1.35 var(--serif);
+  text-wrap: balance;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  .sign[data-loading] .sign-plate::after { display: none; }
+}
