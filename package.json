@@ -1,3 +1,8 @@
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:seed": "node dev/seed.mjs"
+  }
 }

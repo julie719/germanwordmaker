@@ -3,10 +3,11 @@ export default async function handler(req, res) {
 
   const { text, historyId } = req.body;
   const voiceId = 'xqj50N5hatZhF8MSqCFS';
+  const elevenLabsUrl = process.env.ELEVENLABS_BASE_URL || 'https://api.elevenlabs.io';
 
   if (historyId) {
     try {
-      const historyRes = await fetch(`https://api.elevenlabs.io/v1/history/${historyId}/audio`, {
+      const historyRes = await fetch(`${elevenLabsUrl}/v1/history/${historyId}/audio`, {
         headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY }
       });
       if (historyRes.ok) {
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
 
   if (!text) return res.status(400).json({ error: 'No text provided' });
 
-  const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+  const response = await fetch(`${elevenLabsUrl}/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
     headers: {
       'xi-api-key': process.env.ELEVENLABS_API_KEY,

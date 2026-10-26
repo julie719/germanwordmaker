@@ -1,9 +1,10 @@
 export default async function handler(req, res) {
   const { id } = req.query;
+  const elevenLabsUrl = process.env.ELEVENLABS_BASE_URL || 'https://api.elevenlabs.io';
   if (!id) return res.status(400).json({ error: 'No id provided' });
 
   try {
-    const audioRes = await fetch(`https://api.elevenlabs.io/v1/history/${id}/audio`, {
+    const audioRes = await fetch(`${elevenLabsUrl}/v1/history/${id}/audio`, {
       headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY }
     });
 

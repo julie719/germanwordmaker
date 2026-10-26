@@ -2,7 +2,9 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   const { concept } = req.body;
   if (!concept) return res.status(400).json({ error: 'No concept provided' });
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const anthropicUrl = process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com';
+  const elevenLabsUrl = process.env.ELEVENLABS_BASE_URL || 'https://api.elevenlabs.io';
+  const response = await fetch(`${anthropicUrl}/v1/messages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,7 +42,7 @@ Set isRefusal to true only when the concept was inappropriate.`,
     const speakText = word.word + '. ' + word.example.split('(')[0].trim();
     const voiceId = 'xqj50N5hatZhF8MSqCFS';
     try {
-      const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`, {
+      const audioRes = await fetch(`${elevenLabsUrl}/v1/text-to-speech/${voiceId}/with-timestamps`, {
         method: 'POST',
         headers: {
           'xi-api-key': process.env.ELEVENLABS_API_KEY,

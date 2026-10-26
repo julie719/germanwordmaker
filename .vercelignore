@@ -1,0 +1,5 @@
+# Local-dev only; Vercel would otherwise serve these as public static files.
+.env*
+dev
+docker-compose.yml
+README.md
